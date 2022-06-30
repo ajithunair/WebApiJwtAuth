@@ -1,0 +1,6 @@
+Debug/
+Release/
+Migrations/
+bin/
+obj/
+.vs/
