@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApiJwtAuth.Data;
 using WebApiJwtAuth.Models;
@@ -19,6 +20,7 @@ namespace WebApiJwtAuth.Controllers
 
         [HttpGet]
         [Route("Products")]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<Product>>> Get()
         {
             var products = await _context.Products.ToListAsync();

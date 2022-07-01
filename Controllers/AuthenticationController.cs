@@ -1,13 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 using WebApiJwtAuth.Models;
 
 namespace WebApiJwtAuth.Controllers
@@ -16,6 +11,12 @@ namespace WebApiJwtAuth.Controllers
     [ApiController]
     public class AuthenticationController : ControllerBase
     {
+        private readonly IConfiguration Configuration;
+
+        public AuthenticationController(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
 
         [HttpPost("login")]
         public IActionResult Login([FromBody] Login user)
@@ -24,15 +25,19 @@ namespace WebApiJwtAuth.Controllers
                 return BadRequest("Invalid user request");
             if (user.UserName == "Ajith" && user.Password == "1234")
             {
-                var secret = ConfigurationManager.Configuration["Jwt:Secret"];
+                var secret = Configuration["Jwt:Secret"];
                 var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
                 var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+                var claims = new List<Claim>()
+                {
+                    new Claim(ClaimTypes.Name, user.UserName),
+                };
                 var securityToken = new JwtSecurityToken
                 (
-                    issuer : ConfigurationManager.Configuration["Jwt:Issuer"],
-                    audience: ConfigurationManager.Configuration["Jwt:Audience"],
+                    issuer : Configuration["Jwt:Issuer"],
+                    audience: Configuration["Jwt:Audience"],
                     signingCredentials: signingCredentials,
-                    claims: new List<Claim>(),
+                    claims: claims,
                     expires: DateTime.Now.AddMinutes(5)
                 );
                 var tokenString = new JwtSecurityTokenHandler().WriteToken(securityToken);
