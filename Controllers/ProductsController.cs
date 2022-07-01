@@ -20,7 +20,6 @@ namespace WebApiJwtAuth.Controllers
 
         [HttpGet]
         [Route("Products")]
-        [Authorize]
         public async Task<ActionResult<IEnumerable<Product>>> Get()
         {
             var products = await _context.Products.ToListAsync();
@@ -37,6 +36,7 @@ namespace WebApiJwtAuth.Controllers
 
         [HttpPost]
         [Route("AddProduct")]
+        [Authorize(Roles ="Admin")]
         public async Task<ActionResult<Product>> Add(Product product)
         {
             _context.Products.Add(product);
@@ -45,7 +45,7 @@ namespace WebApiJwtAuth.Controllers
         }
 
         [HttpDelete]
-        [Route("DeleteProduct")]
+        [Route("DeleteProduct"), Authorize(Roles ="Admin")]
         public async Task<ActionResult<IEnumerable<Product>>> Delete(int id)
         {
             var product = await _context.Products.FindAsync(id);
@@ -57,7 +57,7 @@ namespace WebApiJwtAuth.Controllers
         }
 
         [HttpPost]
-        [Route("UpdateProduct")]
+        [Route("UpdateProduct"), Authorize(Roles = "Admin")]
         public async Task<ActionResult<IEnumerable<Product>>> Update(int id, Product product)
         {
             if (id != product.ProductId)
